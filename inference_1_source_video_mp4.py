@@ -63,7 +63,7 @@ def get_plan_view(H,src, dst, results, frame):
                 xx = int(dstt[0][0][0])
                 yy = int(dstt[0][0][1])
                 cv2.circle(dsttt, (xx, yy), 5, (0, 0, 255), -1)
-                cv2.circle(plan_view, (xx, yy), 5, (0, 0, 255), -1)
+                cv2.circle(frame, (int((x1 + x2) / 2), y2), 5, (0, 0, 255), -1)
     # for i in range(n):
     #     row = cord[i]
     #     if row[4] >= 0.55:  ### threshold value for detection. We are discarding everything below this value
@@ -81,7 +81,7 @@ def get_plan_view(H,src, dst, results, frame):
     #                 yy = int(dstt[0][0][1])
     #                 cv2.circle(dsttt, (xx, yy), 5, (0, 0, 255), -1)
     #                 cv2.circle(plan_view, (xx, yy), 5, (0, 0, 255), -1)
-    return plan_view, dsttt
+    return frame, dsttt
 
 
 # -------------------------------------- MAIN FUNCTION------------------------------------------------------------------
@@ -98,7 +98,7 @@ dst = cv2.imread('./ImageFolder/dst.jpg', -1)
 
 
 # khai bao ma tran homography H
-H = [[1.27947143e+00, 1.43046366e+00, 5.10784175e+01], [3.23311622e-02, 2.41156586e+00, 6.29061599e+01], [3.65350962e-06, 2.31483382e-03, 1.00000000e+00]]
+H = [[6.38606639e-01, 6.98351296e-01, 3.21941459e+01], [1.94300303e-02, 1.18664317e+00, 3.52808045e+01], [8.14225550e-06, 1.13005150e-03, 1.00000000e+00]]
 H = np.array(H)
 
 
@@ -108,12 +108,14 @@ while cap.isOpened():
         break
     # try:
     frame = cap.read()
-    # frame = cv2.resize(src=frame, dsize=None, fx=0.8, fy=0.8)
+    frame = frame[1]
+    # you must run this imwrite to save src image to image folder after that comment this line and run calculate homo matrix to calculate H
+    # cv2.imwrite("src" + ".jpg", frame)
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = model(frame)
 
-    plan_view, des = get_plan_view(H, frame, dst, results, frame)
-    cv2.imshow("plan view", plan_view)
+    camera_view, des = get_plan_view(H, frame, dst, results, frame)
+    cv2.imshow("camera view", camera_view)
     cv2.imshow("dst ", des)
     # except Exception as bug:
     #     print("bug: ", bug)
